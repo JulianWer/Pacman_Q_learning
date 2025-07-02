@@ -1,69 +1,67 @@
 # Pacman Q-Learning
 
-Dieses Projekt implementiert eine vereinfachte Version des klassischen Pac-Man-Spiels, bei der ein Agent mittels Q-Learning lernt, optimal zu navigieren. Das Ziel des Pac-Man-Agenten ist es, alle Kekse in einem Labyrinth zu fressen und dabei einem Geist auszuweichen.
+This project implements a simplified version of the classic Pac-Man game, where an agent learns to navigate optimally using Q-Learning. The goal of the Pac-Man agent is to eat all the cookies in a maze while avoiding a ghost.
 
-## Funktionsweise
+## How it Works
 
-Das Projekt nutzt die Pygame-Bibliothek für die grafische Darstellung und die Logik des Spiels. Der Agent lernt durch Interaktion mit der Spielumgebung, indem er für seine Aktionen Belohnungen oder Bestrafungen erhält.
+The project uses the Pygame library for graphics and game logic. The game runs in episodes. In each episode, Pac-Man tries to eat all the cookies without being caught by the ghost or exceeding the step limit for the episode.
 
-### Spiel-Logik
+### Game Logic
 
-Das Spiel wird in Episoden ausgeführt. In jeder Episode versucht Pac-Man, alle Kekse zu fressen, ohne vom Geist gefangen zu werden oder das Zeitlimit zu überschreiten.
+  * **Pac-Man**: Controlled by the Q-Learning agent, it moves through the maze to collect cookies.
+  * **Ghost**: Chases Pac-Man using a simple logic aimed at reducing the distance to Pac-Man.
+  * **Cookies**: Scattered throughout the maze. Eating a cookie provides a positive reward.
+  * **Walls**: Impassable obstacles for both Pac-Man and the Ghost.
 
-  - **Pac-Man**: Gesteuert durch den Q-Learning-Agenten. Bewegt sich durch das Labyrinth, um Kekse zu sammeln.
-  - **Geist**: Verfolgt Pac-Man mit einer einfachen Logik, die darauf abzielt, den Abstand zu Pac-Man zu verringern.
-  - **Kekse**: Im Labyrinth verteilt. Das Fressen eines Kekses gibt eine positive Belohnung.
-  - **Wände**: Unpassierbare Hindernisse für Pac-Man und den Geist.
+### Q-Learning Agent
 
-### Q-Learning-Agent
+The agent makes decisions based on a Q-table, which stores the expected reward for each action in every state.
 
-Der Agent trifft Entscheidungen auf der Grundlage einer Q-Tabelle, die die erwartete Belohnung für jede Aktion in jedem Zustand speichert.
+  * **State**: The state is defined by the positions of Pac-Man and the ghost, along with the status of nearby cookies. The status of cookies immediately around Pac-Man (up, down, left, right) is encoded as a bitmask.
+  * **Actions**: The agent can move up, down, left, or right.
+  * **Learning**: The agent uses an Epsilon-Greedy strategy to balance exploring new actions and exploiting known good ones. After each action, the Q-table is updated using the Bellman equation, which considers the reward received and the maximum Q-value of the next state.
 
-  - **Zustand**: Definiert durch die Position von Pac-Man, die Position des Geistes und den Status der nahegelegenen Kekse. Der Keksstatus um Pac-Man herum (oben, unten, links, rechts) wird als Bitmaske kodiert.
-  - **Aktionen**: Der Agent kann sich nach oben, unten, links oder rechts bewegen.
-  - **Lernen**: Der Agent verwendet die Epsilon-Greedy-Strategie, um zwischen der Erkundung neuer Aktionen und der Ausnutzung bekannter guter Aktionen abzuwägen. Die Q-Tabelle wird nach jeder Aktion mithilfe der Bellman-Gleichung aktualisiert, die die erhaltene Belohnung und den maximalen Q-Wert des nächsten Zustands berücksichtigt.
+### Reward Structure
 
-### Belohnungsstruktur
+The reward system is designed to motivate the desired behavior:
 
-Das Belohnungssystem ist so konzipiert, dass der Agent zu erwünschtem Verhalten motiviert wird:
+  * **+100 points**: For winning by eating all the cookies.
+  * **+10 points**: For eating a single cookie.
+  * **-0.1 points**: For each step taken, encouraging the agent to find the fastest route.
+  * **-20 points**: For exceeding the maximum number of steps in an episode.
+  * **-50 points**: For colliding with the ghost.
 
-  - **+100 Punkte**: für den Sieg durch das Fressen aller Kekse.
-  - **+10 Punkte**: für das Fressen eines einzelnen Kekses.
-  - **-0.1 Punkte**: für jeden Schritt, um den Agenten zu ermutigen, den schnellsten Weg zu finden.
-  - **-20 Punkte**: bei Überschreitung der maximalen Anzahl von Schritten pro Episode.
-  - **-50 Punkte**: bei einer Kollision mit dem Geist.
+## Project Structure
 
-## Projektstruktur
+The project is divided into several Python files:
 
-Das Projekt ist in mehrere Python-Dateien aufgeteilt:
+  * **`main.py`**: The main entry point that starts the training loop and plots the results.
+  * **`game.py`**: Contains the main `Game` class, which manages the game logic, state, and rendering.
+  * **`game_objects.py`**: Defines the `Pacman` and `Ghost` classes, including their movement and appearance.
+  * **`q_learning_agent.py`**: Implements the `QLearningAgent`, which manages the Q-table, selects actions, and learns from experience.
+  * **`constants.py`**: Stores all global constants, such as screen dimensions, colors, and Q-learning parameters.
+  * **`.gitignore`**: Specifies files and directories to be excluded from version control.
 
-  - **`main.py`**: Der Haupteinstiegspunkt, der die Trainingsschleife startet und die Ergebnisse plottet.
-  - **`game.py`**: Enthält die Hauptklasse `Game`, die die Spiellogik, den Spielzustand und das Rendern verwaltet.
-  - **`game_objects.py`**: Definiert die Klassen für `Pacman` und `Ghost`, einschließlich ihrer Bewegung und ihres Aussehens.
-  - **`q_learning_agent.py`**: Implementiert den `QLearningAgent`, der die Q-Tabelle verwaltet, Aktionen auswählt und aus Erfahrungen lernt.
-  - **`constants.py`**: Speichert alle globalen Konstanten wie Bildschirmabmessungen, Farben und Q-Learning-Parameter.
-  - **`.gitignore`**: Spezifiziert Dateien und Verzeichnisse, die von der Versionskontrolle ausgeschlossen werden sollen.
+## Prerequisites
 
-## Voraussetzungen
+Ensure you have the following Python libraries installed:
 
-Stellen Sie sicher, dass die folgenden Python-Bibliotheken installiert sind:
+  * Pygame
+  * Matplotlib
+  * NumPy
 
-  - **Pygame**: Für die Spiel-Engine und die grafische Darstellung.
-  - **Matplotlib**: Zum Plotten der Trainingsergebnisse.
-  - **NumPy**: Für die effiziente Verwaltung der Q-Tabelle und numerische Operationen.
-
-Sie können die erforderlichen Bibliotheken mit dem folgenden Befehl installieren:
+You can install the required libraries with the following command:
 
 ```bash
 pip install pygame matplotlib numpy
 ```
 
-## Ausführung
+## How to Run
 
-Um das Training des Pac-Man-Agenten zu starten, führen Sie die Hauptdatei aus:
+To start training the Pac-Man agent, execute the main file:
 
 ```bash
 python main.py
 ```
 
-Während des Trainings wird der Fortschritt in der Konsole ausgegeben, einschließlich der Belohnung für jede Episode sowie der Anzahl der Siege und Niederlagen. Nach Abschluss des Trainings wird ein Diagramm angezeigt, das die Belohnung pro Episode und einen gleitenden Durchschnitt darstellt, um den Lernfortschritt zu visualisieren.
+During training, progress is printed to the console, showing the reward for each episode and the total number of wins and losses. Once training is complete, a plot will be displayed showing the reward per episode and a moving average to visualize the agent's learning progress.
